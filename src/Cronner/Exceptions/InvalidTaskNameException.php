@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner\Exceptions;
 
-class InvalidTaskNameException extends InvalidArgumentException
-{
 
+final class InvalidTaskNameException extends InvalidArgumentException
+{
 }

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner\tests\objects;
 
+
 class AnotherSimpleTestObject
 {
 	use \Nette\SmartObject;
+
 
 	/**
 	 * @cronner-task Test
@@ -14,5 +16,4 @@ class AnotherSimpleTestObject
 	public function test01()
 	{
 	}
-
 }

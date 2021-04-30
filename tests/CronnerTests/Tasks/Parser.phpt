@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner\tests\Tasks;
 
+
 use stdClass;
-use stekycz\Cronner\Exceptions\InvalidParameterException;
 use stekycz\Cronner\Tasks\Parser;
 use Tester\Assert;
 
@@ -28,7 +28,8 @@ class ParserTest extends \TestCase
 		Assert::equal($expected, Parser::parseName($annotation));
 	}
 
-	public function dataProviderParseName() : array
+
+	public function dataProviderParseName(): array
 	{
 		return [
 			['Testovací úkol', 'Testovací úkol'],
@@ -37,13 +38,14 @@ class ParserTest extends \TestCase
 			['false', 'false'],
 			['0', '0'],
 			['1', '1'],
-			[NULL, TRUE],
-			[NULL, FALSE],
-			[NULL, 0],
-			[NULL, 1],
-			[NULL, new stdClass()],
+			[null, true],
+			[null, false],
+			[null, 0],
+			[null, 1],
+			[null, new stdClass()],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderParsePeriod
@@ -55,7 +57,8 @@ class ParserTest extends \TestCase
 		Assert::equal($expected, Parser::parsePeriod($annotation));
 	}
 
-	public function dataProviderParsePeriod() : array
+
+	public function dataProviderParsePeriod(): array
 	{
 		return [
 			['5 minutes', '5 minutes'],
@@ -65,6 +68,7 @@ class ParserTest extends \TestCase
 			['2 months', '2 months'],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderParsePeriodError
@@ -76,7 +80,8 @@ class ParserTest extends \TestCase
 		Parser::parsePeriod($annotation);
 	}
 
-	public function dataProviderParsePeriodError() : array
+
+	public function dataProviderParsePeriodError(): array
 	{
 		return [
 			['nejaky blabol'],
@@ -86,6 +91,7 @@ class ParserTest extends \TestCase
 			['1'],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderParseDays
@@ -97,7 +103,8 @@ class ParserTest extends \TestCase
 		Assert::equal($expected, Parser::parseDays($annotation));
 	}
 
-	public function dataProviderParseDays() : array
+
+	public function dataProviderParseDays(): array
 	{
 		return [
 			// Regular and simple values
@@ -130,6 +137,7 @@ class ParserTest extends \TestCase
 		];
 	}
 
+
 	/**
 	 * @dataProvider dataProviderParseDaysError
 	 * @param string $annotation
@@ -140,7 +148,8 @@ class ParserTest extends \TestCase
 		Parser::parseDays($annotation);
 	}
 
-	public function dataProviderParseDaysError() : array
+
+	public function dataProviderParseDaysError(): array
 	{
 		return [
 			['nejaky blabol'],
@@ -150,6 +159,7 @@ class ParserTest extends \TestCase
 			['1'],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderParseTimes
@@ -161,7 +171,8 @@ class ParserTest extends \TestCase
 		Assert::equal($expected, Parser::parseTimes($annotation));
 	}
 
-	public function dataProviderParseTimes() : array
+
+	public function dataProviderParseTimes(): array
 	{
 		return [
 			// Basic
@@ -169,7 +180,7 @@ class ParserTest extends \TestCase
 				[
 					[
 						'from' => '11:00',
-						'to' => NULL,
+						'to' => null,
 					],
 				],
 				'11:00',
@@ -188,11 +199,11 @@ class ParserTest extends \TestCase
 				[
 					[
 						'from' => '11:00',
-						'to' => NULL,
+						'to' => null,
 					],
 					[
 						'from' => '17:00',
-						'to' => NULL,
+						'to' => null,
 					],
 				],
 				'11:00, 17:00',
@@ -358,6 +369,7 @@ class ParserTest extends \TestCase
 		];
 	}
 
+
 	/**
 	 * @dataProvider dataProviderParseTimesError
 	 * @param string $annotation
@@ -368,7 +380,8 @@ class ParserTest extends \TestCase
 		Parser::parseTimes($annotation);
 	}
 
-	public function dataProviderParseTimesError() : array
+
+	public function dataProviderParseTimesError(): array
 	{
 		return [
 			['nejaky blabol'],
@@ -378,7 +391,6 @@ class ParserTest extends \TestCase
 			['1'],
 		];
 	}
-
 }
 
 run(new ParserTest());

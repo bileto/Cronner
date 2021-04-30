@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner\Bar;
 
+
 use stekycz\Cronner\Cronner;
 use Tracy\IBarPanel;
 
-class Tasks implements IBarPanel
+final class Tasks implements IBarPanel
 {
-	use \Nette\SmartObject;
 
-	/**
-	 * @var Cronner
-	 */
-	protected $cronner;
+	/** @var Cronner */
+	private $cronner;
+
 
 	public function __construct(Cronner $cronner)
 	{
 		$this->cronner = $cronner;
 	}
 
-	public function getPanel() : string
+
+	public function getPanel(): string
 	{
 		$tasks = [];
 		foreach ($this->cronner->getTasks() as $task) {
@@ -37,7 +37,8 @@ class Tasks implements IBarPanel
 		return ob_get_clean();
 	}
 
-	public function getTab() : string
+
+	public function getTab(): string
 	{
 		ob_start();
 		$count = $this->cronner->countTasks();
@@ -45,5 +46,4 @@ class Tasks implements IBarPanel
 
 		return ob_get_clean();
 	}
-
 }

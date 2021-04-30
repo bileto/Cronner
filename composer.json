@@ -23,19 +23,19 @@
 	},
 	"require": {
 		"php": ">=7.1.0",
-		"tracy/tracy": "^2.4",
-		"nette/di": "^2.4",
-		"nette/bootstrap": "^2.4",
-		"nette/utils": "^2.4",
+		"tracy/tracy": "^2.6",
+		"nette/di": "^3.0",
+		"nette/bootstrap": "^3.0",
+		"nette/utils": "^3.0",
 		"nette/reflection": "^2.4",
-		"nette/safe-stream": "^2.3",
+		"nette/safe-stream": "^2.4",
 		"bileto/critical-section": "^2.1"
 	},
 	"require-dev": {
 		"nette/tester": "^1.7",
-		"jakub-onderka/php-parallel-lint": "^0.9",
+		"jakub-onderka/php-parallel-lint": "^1.0",
 		"mockery/mockery": "^0.9",
-		"phpstan/phpstan": "^0.8"
+		"phpstan/phpstan": "^0.12"
 	},
 	"suggest": {
 	},

@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner\tests\Tasks;
 
+
 use DateTime;
 use DateTimeInterface;
 use Nette;
@@ -30,20 +31,22 @@ class ParametersTest extends \TestCase
 		Assert::equal($expected, $params->getName());
 	}
 
-	public function dataProviderGetName() : array
+
+	public function dataProviderGetName(): array
 	{
 		return [
 			['Name of task', [Parameters::TASK => 'Name of task',]],
 			['0', [Parameters::TASK => '0',]],
 			['', [Parameters::TASK => '   ',]],
 			['', [Parameters::TASK => '',]],
-			['', [Parameters::TASK => TRUE,]],
-			['', [Parameters::TASK => FALSE,]],
-			['', [Parameters::TASK => NULL,]],
+			['', [Parameters::TASK => true,]],
+			['', [Parameters::TASK => false,]],
+			['', [Parameters::TASK => null,]],
 			['', [Parameters::TASK => 0,]],
 			['', []],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderIsTask
@@ -56,20 +59,22 @@ class ParametersTest extends \TestCase
 		Assert::equal($expected, $params->isTask());
 	}
 
-	public function dataProviderIsTask() : array
+
+	public function dataProviderIsTask(): array
 	{
 		return [
-			[TRUE, [Parameters::TASK => 'Name of task',]],
-			[TRUE, [Parameters::TASK => '0',]],
-			[FALSE, [Parameters::TASK => '   ',]],
-			[FALSE, [Parameters::TASK => '',]],
-			[FALSE, [Parameters::TASK => TRUE,]],
-			[FALSE, [Parameters::TASK => FALSE,]],
-			[FALSE, [Parameters::TASK => NULL,]],
-			[FALSE, [Parameters::TASK => 0,]],
-			[FALSE, []],
+			[true, [Parameters::TASK => 'Name of task',]],
+			[true, [Parameters::TASK => '0',]],
+			[false, [Parameters::TASK => '   ',]],
+			[false, [Parameters::TASK => '',]],
+			[false, [Parameters::TASK => true,]],
+			[false, [Parameters::TASK => false,]],
+			[false, [Parameters::TASK => null,]],
+			[false, [Parameters::TASK => 0,]],
+			[false, []],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderIsNextPeriod
@@ -78,83 +83,85 @@ class ParametersTest extends \TestCase
 	 * @param DateTimeInterface|null $lastRunTime
 	 * @param array $parameters
 	 */
-	public function testDetectsIfNowIsInNextPeriod(bool $expected, DateTimeInterface $now, DateTimeInterface $lastRunTime = NULL, array $parameters)
+	public function testDetectsIfNowIsInNextPeriod(bool $expected, DateTimeInterface $now, DateTimeInterface $lastRunTime = null, array $parameters)
 	{
 		$params = new Parameters($parameters);
 		Assert::same($expected, $params->isNextPeriod($now, $lastRunTime));
 	}
 
-	public function dataProviderIsNextPeriod() : array
+
+	public function dataProviderIsNextPeriod(): array
 	{
 		return [
 			[
-				TRUE,
+				true,
 				new \DateTimeImmutable('2013-02-03 17:00:00'),
 				new \DateTimeImmutable('2013-02-03 16:54:59'),
 				[Parameters::PERIOD => '5 minutes',],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:54:59'),
 				[Parameters::PERIOD => '5 minutes',],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:55:00'),
 				[Parameters::PERIOD => '5 minutes',],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:55:01'),
 				[Parameters::PERIOD => '5 minutes',],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:55:05'),
 				[Parameters::PERIOD => '5 minutes',],
 			],
 			[
-				FALSE,
+				false,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:55:06'),
 				[Parameters::PERIOD => '5 minutes',],
 			],
 			[
-				FALSE,
+				false,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:55:01'),
 				[Parameters::PERIOD => '1 hour',],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:00:00'),
 				[Parameters::PERIOD => '1 hour',],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
 				new Nette\Utils\DateTime('2013-02-03 16:00:00'),
 				[],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
-				NULL,
+				null,
 				[Parameters::PERIOD => '1 hour',],
 			],
 			[
-				TRUE,
+				true,
 				new Nette\Utils\DateTime('2013-02-03 17:00:00'),
-				NULL,
+				null,
 				[],
 			],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderIsInDay
@@ -168,42 +175,44 @@ class ParametersTest extends \TestCase
 		Assert::equal($expected, $params->isInDay($now));
 	}
 
-	public function dataProviderIsInDay() : array
+
+	public function dataProviderIsInDay(): array
 	{
 		return [
 			// One day
-			[TRUE, [Parameters::DAYS => ['Mon',],], new Nette\Utils\DateTime('2013-02-11 12:34:56')],
-			[FALSE, [Parameters::DAYS => ['Mon',],], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
-			[TRUE, [Parameters::DAYS => ['Tue',],], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
-			[FALSE, [Parameters::DAYS => ['Tue',],], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
-			[TRUE, [Parameters::DAYS => ['Wed',],], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
-			[FALSE, [Parameters::DAYS => ['Wed',],], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
-			[TRUE, [Parameters::DAYS => ['Thu',],], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
-			[FALSE, [Parameters::DAYS => ['Thu',],], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
-			[TRUE, [Parameters::DAYS => ['Fri',],], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
-			[FALSE, [Parameters::DAYS => ['Fri',],], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
-			[TRUE, [Parameters::DAYS => ['Sat',],], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
-			[FALSE, [Parameters::DAYS => ['Sat',],], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
-			[TRUE, [Parameters::DAYS => ['Sun',],], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
-			[FALSE, [Parameters::DAYS => ['Sun',],], new Nette\Utils\DateTime('2013-02-18 12:34:56')],
+			[true, [Parameters::DAYS => ['Mon',],], new Nette\Utils\DateTime('2013-02-11 12:34:56')],
+			[false, [Parameters::DAYS => ['Mon',],], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
+			[true, [Parameters::DAYS => ['Tue',],], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
+			[false, [Parameters::DAYS => ['Tue',],], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
+			[true, [Parameters::DAYS => ['Wed',],], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
+			[false, [Parameters::DAYS => ['Wed',],], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
+			[true, [Parameters::DAYS => ['Thu',],], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
+			[false, [Parameters::DAYS => ['Thu',],], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
+			[true, [Parameters::DAYS => ['Fri',],], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
+			[false, [Parameters::DAYS => ['Fri',],], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
+			[true, [Parameters::DAYS => ['Sat',],], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
+			[false, [Parameters::DAYS => ['Sat',],], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
+			[true, [Parameters::DAYS => ['Sun',],], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
+			[false, [Parameters::DAYS => ['Sun',],], new Nette\Utils\DateTime('2013-02-18 12:34:56')],
 			// Empty days
-			[FALSE, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-11 12:34:56')],
-			[FALSE, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
-			[FALSE, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
-			[FALSE, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
-			[FALSE, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
-			[FALSE, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
-			[FALSE, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
+			[false, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-11 12:34:56')],
+			[false, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
+			[false, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
+			[false, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
+			[false, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
+			[false, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
+			[false, [Parameters::DAYS => [],], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
 			// Without days
-			[TRUE, [Parameters::DAYS => NULL,], new Nette\Utils\DateTime('2013-02-11 12:34:56')],
-			[TRUE, [Parameters::DAYS => NULL,], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
-			[TRUE, [Parameters::DAYS => NULL,], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
-			[TRUE, [Parameters::DAYS => NULL,], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
-			[TRUE, [Parameters::DAYS => NULL,], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
-			[TRUE, [Parameters::DAYS => NULL,], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
-			[TRUE, [Parameters::DAYS => NULL,], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
+			[true, [Parameters::DAYS => null,], new Nette\Utils\DateTime('2013-02-11 12:34:56')],
+			[true, [Parameters::DAYS => null,], new Nette\Utils\DateTime('2013-02-12 12:34:56')],
+			[true, [Parameters::DAYS => null,], new Nette\Utils\DateTime('2013-02-13 12:34:56')],
+			[true, [Parameters::DAYS => null,], new Nette\Utils\DateTime('2013-02-14 12:34:56')],
+			[true, [Parameters::DAYS => null,], new Nette\Utils\DateTime('2013-02-15 12:34:56')],
+			[true, [Parameters::DAYS => null,], new Nette\Utils\DateTime('2013-02-16 12:34:56')],
+			[true, [Parameters::DAYS => null,], new Nette\Utils\DateTime('2013-02-17 12:34:56')],
 		];
 	}
+
 
 	/**
 	 * @dataProvider dataProviderIsInTime
@@ -218,53 +227,54 @@ class ParametersTest extends \TestCase
 		Assert::equal($expected, $params->isInTime($now));
 	}
 
-	public function dataProviderIsInTime() : array
+
+	public function dataProviderIsInTime(): array
 	{
 		return [
 			// One minute
 			[
-				TRUE,
+				true,
 				[
 					Parameters::TIME => [
 						[
 							'from' => '11:00',
-							'to' => NULL,
+							'to' => null,
 						],
 					],
 				],
 				'2013-02-11 11:00:00',
 			],
 			[
-				TRUE,
+				true,
 				[
 					Parameters::TIME => [
 						[
 							'from' => '11:00',
-							'to' => NULL,
+							'to' => null,
 						],
 					],
 				],
 				'2013-02-11 11:00:59',
 			],
 			[
-				FALSE,
+				false,
 				[
 					Parameters::TIME => [
 						[
 							'from' => '11:00',
-							'to' => NULL,
+							'to' => null,
 						],
 					],
 				],
 				'2013-02-11 10:59:59',
 			],
 			[
-				FALSE,
+				false,
 				[
 					Parameters::TIME => [
 						[
 							'from' => '11:00',
-							'to' => NULL,
+							'to' => null,
 						],
 					],
 				],
@@ -272,7 +282,7 @@ class ParametersTest extends \TestCase
 			],
 			// Range
 			[
-				TRUE,
+				true,
 				[
 					Parameters::TIME => [
 						[
@@ -284,7 +294,7 @@ class ParametersTest extends \TestCase
 				'2013-02-11 11:00:00',
 			],
 			[
-				TRUE,
+				true,
 				[
 					Parameters::TIME => [
 						[
@@ -296,7 +306,7 @@ class ParametersTest extends \TestCase
 				'2013-02-11 11:30:00',
 			],
 			[
-				TRUE,
+				true,
 				[
 					Parameters::TIME => [
 						['from' => '11:00', 'to' => '12:00',],
@@ -305,7 +315,7 @@ class ParametersTest extends \TestCase
 				'2013-02-11 12:00:59',
 			],
 			[
-				FALSE,
+				false,
 				[
 					Parameters::TIME => [
 						['from' => '11:00', 'to' => '12:00',],
@@ -314,7 +324,7 @@ class ParametersTest extends \TestCase
 				'2013-02-11 10:59:59',
 			],
 			[
-				FALSE,
+				false,
 				[
 					Parameters::TIME => [
 						['from' => '11:00', 'to' => '12:00',],
@@ -324,13 +334,13 @@ class ParametersTest extends \TestCase
 			],
 			// Empty
 			[
-				TRUE,
+				true,
 				[Parameters::TIME => [],],
 				'2013-02-11 12:00:00',
 			],
 			[
-				TRUE,
-				[Parameters::TIME => NULL,],
+				true,
+				[Parameters::TIME => null,],
 				'2013-02-11 12:00:00',
 			],
 		];

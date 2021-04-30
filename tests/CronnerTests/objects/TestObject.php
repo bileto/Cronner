@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner\tests\objects;
 
+
 class TestObject
 {
 	use \Nette\SmartObject;
+
 
 	/**
 	 * @cronner-task
@@ -16,6 +18,7 @@ class TestObject
 	{
 	}
 
+
 	/**
 	 * @cronner-task E-mail notifications
 	 * @cronner-period 5 minutes
@@ -23,6 +26,7 @@ class TestObject
 	public function test01()
 	{
 	}
+
 
 	/**
 	 * @cronner-task
@@ -34,6 +38,7 @@ class TestObject
 	{
 	}
 
+
 	/**
 	 * @cronner-task Test 3
 	 * @cronner-period 17 minutes
@@ -44,6 +49,7 @@ class TestObject
 	{
 	}
 
+
 	/**
 	 * @cronner-task Test 4
 	 * @cronner-period 1 day
@@ -52,5 +58,4 @@ class TestObject
 	public function test04()
 	{
 	}
-
 }

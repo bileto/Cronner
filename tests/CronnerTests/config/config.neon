@@ -4,7 +4,6 @@ extensions:
 services:
 	fooService: stekycz\Cronner\tests\objects\FooService
 
-
 cronner:
 	tasks:
 		- stekycz\Cronner\tests\objects\SimpleTestObjectWithDependency(@fooService)

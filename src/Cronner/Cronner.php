@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner;
 
+
+use Bileto\CriticalSection\ICriticalSection;
+use DateTime;
+use DateTimeInterface;
 use Exception;
 use Nette\Reflection\ClassType;
-use DateTimeInterface;
-use DateTime;
+use Nette\SmartObject;
 use Nette\Utils\Strings;
 use ReflectionMethod;
-use Bileto\CriticalSection\ICriticalSection;
 use stekycz\Cronner\Exceptions\DuplicateTaskNameException;
 use stekycz\Cronner\Exceptions\InvalidArgumentException;
 use stekycz\Cronner\Exceptions\RuntimeException;
@@ -25,65 +27,40 @@ use Tracy\Debugger;
  */
 class Cronner
 {
-	use \Nette\SmartObject;
-  
-	/**
-	 * @var callable[]
-	 */
-	public $onTaskBegin = array();
+	use SmartObject;
 
-	/**
-	 * @var callable[]
-	 */
-	public $onTaskFinished = array();
+	/** @var callable[] */
+	public $onTaskBegin = [];
 
-	/**
-	 * @var callable[]
-	 */
-	public $onTaskError = array();
+	/** @var callable[] */
+	public $onTaskFinished = [];
 
-	/**
-	 * @var Task[]
-	 */
-	private $tasks = array();
+	/** @var callable[] */
+	public $onTaskError = [];
 
-	/**
-	 * @var string[]
-	 */
-	private $registeredTaskObjects = array();
+	/** @var Task[] */
+	private $tasks = [];
 
-	/**
-	 * @var ITimestampStorage
-	 */
+	/** @var string[] */
+	private $registeredTaskObjects = [];
+
+	/** @var ITimestampStorage */
 	private $timestampStorage;
 
-	/**
-	 * @var ICriticalSection
-	 */
+	/** @var ICriticalSection */
 	private $criticalSection;
 
-	/**
-	 * @var int Max execution time of PHP script in seconds
-	 */
+	/** @var int Max execution time of PHP script in seconds */
 	private $maxExecutionTime;
 
-	/**
-	 * @var bool
-	 */
-	private $skipFailedTask = TRUE;
+	/** @var bool */
+	private $skipFailedTask = true;
+
 
 	/**
-	 * @param ITimestampStorage $timestampStorage
-	 * @param ICriticalSection $criticalSection
 	 * @param int|null $maxExecutionTime It is used only when Cronner runs
-	 * @param bool $skipFailedTask
 	 */
-	public function __construct(
-		ITimestampStorage $timestampStorage,
-		ICriticalSection $criticalSection,
-		int $maxExecutionTime = NULL,
-		bool $skipFailedTask = TRUE
-	)
+	public function __construct(ITimestampStorage $timestampStorage, ICriticalSection $criticalSection, int $maxExecutionTime = null, bool $skipFailedTask = true)
 	{
 		$this->setTimestampStorage($timestampStorage);
 		$this->criticalSection = $criticalSection;
@@ -94,31 +71,52 @@ class Cronner
 		};
 	}
 
+
 	/**
 	 * @return Task[]
 	 */
-	public function getTasks() : array
+	public function getTasks(): array
 	{
 		return $this->tasks;
 	}
 
-	public function setTimestampStorage(ITimestampStorage $timestampStorage) : self
+
+	public function setTimestampStorage(ITimestampStorage $timestampStorage): self
 	{
 		$this->timestampStorage = $timestampStorage;
 
 		return $this;
 	}
 
+
+	/**
+	 * Sets flag that thrown exceptions will not be thrown but cached and logged.
+	 */
+	public function setSkipFailedTask(bool $skipFailedTask = true): self
+	{
+		$this->skipFailedTask = $skipFailedTask;
+
+		return $this;
+	}
+
+
+	/**
+	 * Returns max execution time for Cronner. It does not load INI value.
+	 */
+	public function getMaxExecutionTime(): ?int
+	{
+		return !is_null($this->maxExecutionTime) ? $this->maxExecutionTime : null;
+	}
+
+
 	/**
 	 * Sets max execution time for Cronner. It is used only when Cronner runs.
 	 *
-	 * @param int|null $maxExecutionTime
-	 * @return Cronner
 	 * @throws InvalidArgumentException
 	 */
-	public function setMaxExecutionTime(int $maxExecutionTime = NULL) : self
+	public function setMaxExecutionTime(?int $maxExecutionTime = null): self
 	{
-		if ($maxExecutionTime !== NULL && $maxExecutionTime <= 0) {
+		if ($maxExecutionTime !== null && $maxExecutionTime <= 0) {
 			throw new InvalidArgumentException("Max execution time must be NULL or non negative number.");
 		}
 		$this->maxExecutionTime = $maxExecutionTime;
@@ -126,25 +124,6 @@ class Cronner
 		return $this;
 	}
 
-	/**
-	 * Sets flag that thrown exceptions will not be thrown but cached and logged.
-	 */
-	public function setSkipFailedTask(bool $skipFailedTask = TRUE) : self
-	{
-		$this->skipFailedTask = $skipFailedTask;
-
-		return $this;
-	}
-
-	/**
-	 * Returns max execution time for Cronner. It does not load INI value.
-	 *
-	 * @return int|null
-	 */
-	public function getMaxExecutionTime()
-	{
-		return !is_null($this->maxExecutionTime) ? $this->maxExecutionTime : NULL;
-	}
 
 	/**
 	 * Adds task case to be processed when cronner runs. If tasks
@@ -155,7 +134,7 @@ class Cronner
 	 * @return Cronner
 	 * @throws InvalidArgumentException
 	 */
-	public function addTasks($tasks) : self
+	public function addTasks($tasks): self
 	{
 		$tasksId = $this->createIdFromObject($tasks);
 		if (in_array($tasksId, $this->registeredTaskObjects)) {
@@ -178,15 +157,16 @@ class Cronner
 		return $this;
 	}
 
+
 	/**
 	 * Runs all cron tasks.
 	 */
-	public function run(DateTimeInterface $now = NULL)
+	public function run(DateTimeInterface $now = null)
 	{
-		if ($now === NULL) {
+		if ($now === null) {
 			$now = new DateTime();
 		}
-		if ($this->maxExecutionTime !== NULL) {
+		if ($this->maxExecutionTime !== null) {
 			set_time_limit($this->maxExecutionTime);
 		}
 
@@ -209,28 +189,31 @@ class Cronner
 				}
 				if ($e instanceof RuntimeException) {
 					throw $e; // Throw exception if it is Cronner Runtime exception
-				} elseif ($this->skipFailedTask === FALSE) {
+				} elseif ($this->skipFailedTask === false) {
 					throw $e; // Throw exception if failed task should not be skipped
 				}
 			}
 		}
 	}
 
+
 	/**
 	 * Returns count of added task objects.
 	 */
-	public function countTaskObjects() : int
+	public function countTaskObjects(): int
 	{
 		return count($this->registeredTaskObjects);
 	}
 
+
 	/**
 	 * Returns count of added tasks.
 	 */
-	public function countTasks() : int
+	public function countTasks(): int
 	{
 		return count($this->tasks);
 	}
+
 
 	/**
 	 * Creates and returns identification string for given object.
@@ -238,9 +221,8 @@ class Cronner
 	 * @param object $tasks
 	 * @return string
 	 */
-	private function createIdFromObject($tasks) : string
+	private function createIdFromObject($tasks): string
 	{
 		return sha1(get_class($tasks));
 	}
-
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace stekycz\Cronner\Exceptions;
 
-class DuplicateTaskNameException extends InvalidArgumentException
-{
 
+final class DuplicateTaskNameException extends InvalidArgumentException
+{
 }

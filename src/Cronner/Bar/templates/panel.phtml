@@ -1,13 +1,18 @@
 <?php use stekycz\Cronner\Tasks\Parameters; ?>
 <style class="tracy-debug">
-	#nette-cronner-table { width: 100%; }
-	#nette-cronner-table th { font-size: 15px !important; }
-	#nette-cronner-overflow { overflow-y: auto; max-height: 500px; min-width: 500px; }
+	#nette-cronner-table { width: 100% }
+	#nette-cronner-table th { font-size: 15px !important }
+	#nette-cronner-overflow { overflow-y: auto }
 </style>
 <div class="nette-cronner">
 	<h1>Cronner</h1>
 
 	<div id="nette-cronner-overflow">
+		<?php
+		if ($tasks === []) {
+			echo '<div style="text-align:center;padding:1em 0;color:#888">No tasks defined.</div>';
+		}
+		?>
 		<table class="nette-inner tracy-inner" id="nette-cronner-table">
 			<tbody>
 				<?php foreach ($tasks as $name => $task): ?>
